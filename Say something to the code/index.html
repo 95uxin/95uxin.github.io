@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Say something to the code</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="created" content="2018-07-21 17:35:47 +0800" />
+    <meta name="modified" content="2018-07-21 17:35:47 +0800" />
+    <meta name="tags" content="miyano, miyano/layout"/>
+    <link rel="stylesheet" href="/default.css" type="text/css">
+  </head>
+  <body>
+    <main>
+      <article>
+       <h1>Say something to the code</h1>
+<h3>index layout</h3>
+<p>The <code class="code-inline">index.html.erb</code> has a <code class="code-inline">site</code> instance. Here it is.</p>
+<br>
+<pre><code class="code-multiline highlight"><span class="k">module</span> <span class="nn">Miyano</span>
+  <span class="k">class</span> <span class="nc">Site</span>
+
+    <span class="k">def</span> <span class="nf">initialize</span>
+      <span class="vi">@posts</span> <span class="o">=</span> <span class="p">[]</span>
+      <span class="vi">@tags</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">end</span>
+
+    <span class="k">def</span> <span class="nf">posts</span>
+      <span class="vi">@posts</span>
+    <span class="k">end</span>
+
+    <span class="k">def</span> <span class="nf">add_post</span><span class="p">(</span><span class="n">post</span><span class="p">)</span>
+      <span class="vi">@posts</span> <span class="o">&amp;</span><span class="n">lt</span><span class="o">&amp;</span><span class="n">lt</span> <span class="n">post</span>
+      <span class="vi">@posts</span><span class="p">.</span><span class="nf">sort_by!</span> <span class="p">{</span><span class="o">|</span><span class="nb">p</span><span class="o">|</span> <span class="p">[</span><span class="nb">p</span><span class="p">.</span><span class="nf">mod_date</span><span class="p">,</span> <span class="nb">p</span><span class="p">.</span><span class="nf">cre_date</span><span class="p">]}</span>
+      <span class="vi">@posts</span><span class="p">.</span><span class="nf">reverse!</span>
+
+      <span class="n">post</span><span class="p">.</span><span class="nf">tags</span><span class="p">.</span><span class="nf">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">tag</span><span class="o">|</span>
+        <span class="k">if</span> <span class="vi">@tags</span><span class="p">.</span><span class="nf">include?</span> <span class="n">tag</span>
+          <span class="vi">@tags</span><span class="p">[</span><span class="n">tag</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">else</span>
+          <span class="vi">@tags</span><span class="p">[</span><span class="n">tag</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="k">end</span>
+      <span class="k">end</span>
+      <span class="vi">@tags</span> <span class="o">=</span> <span class="vi">@tags</span><span class="p">.</span><span class="nf">sort_by</span> <span class="p">{</span><span class="o">|</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="o">|</span> <span class="p">[</span><span class="o">-</span><span class="n">value</span><span class="p">,</span> <span class="n">key</span><span class="p">.</span><span class="nf">length</span><span class="p">]}</span>
+                   <span class="p">.</span><span class="nf">to_h</span>
+    <span class="k">end</span>
+
+    <span class="k">def</span> <span class="nf">_tags</span>
+      <span class="vi">@tags</span>
+    <span class="k">end</span>
+
+    <span class="k">def</span> <span class="nf">tags</span>
+      <span class="n">prefix</span> <span class="o">=</span> <span class="vi">@current_tag</span>
+      <span class="n">ret_tags</span> <span class="o">=</span> <span class="p">[]</span>
+
+      <span class="k">if</span> <span class="n">prefix</span><span class="p">.</span><span class="nf">nil?</span>
+        <span class="vi">@tags</span><span class="p">.</span><span class="nf">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">_t</span><span class="p">,</span> <span class="n">_</span><span class="o">|</span>
+          <span class="n">t</span> <span class="o">=</span> <span class="n">_t</span><span class="p">.</span><span class="nf">split</span><span class="p">(</span><span class="s2">"/"</span><span class="p">).</span><span class="nf">first</span>
+          <span class="n">ret_tags</span> <span class="o">&amp;</span><span class="n">lt</span><span class="o">&amp;</span><span class="n">lt</span> <span class="n">t</span> <span class="k">unless</span> <span class="n">ret_tags</span><span class="p">.</span><span class="nf">include?</span> <span class="n">t</span>
+        <span class="k">end</span>
+        <span class="k">return</span> <span class="n">ret_tags</span>
+      <span class="k">end</span>
+
+      <span class="vi">@tags</span><span class="p">.</span><span class="nf">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">_t</span><span class="p">,</span> <span class="n">_</span><span class="o">|</span>
+        <span class="k">next</span> <span class="k">if</span> <span class="n">_t</span><span class="p">.</span><span class="nf">length</span> <span class="o">&amp;</span><span class="n">lt</span><span class="o">=</span> <span class="n">prefix</span><span class="p">.</span><span class="nf">length</span>
+        <span class="k">if</span> <span class="n">_t</span><span class="p">.</span><span class="nf">start_with?</span> <span class="n">prefix</span>
+          <span class="n">t</span> <span class="o">=</span> <span class="n">_t</span><span class="p">.</span><span class="nf">delete_prefix</span> <span class="n">prefix</span>
+          <span class="n">t</span> <span class="o">=</span> <span class="n">t</span><span class="p">.</span><span class="nf">delete_prefix!</span> <span class="s2">"/"</span>
+          <span class="n">t</span> <span class="o">=</span> <span class="n">t</span><span class="p">.</span><span class="nf">split</span><span class="p">(</span><span class="s2">"/"</span><span class="p">).</span><span class="nf">first</span> <span class="k">if</span> <span class="n">t</span>
+          <span class="n">ret_tags</span> <span class="o">&amp;</span><span class="n">lt</span><span class="o">&amp;</span><span class="n">lt</span> <span class="n">t</span> <span class="k">unless</span> <span class="n">t</span><span class="p">.</span><span class="nf">nil?</span> <span class="n">or</span> <span class="n">ret_tags</span><span class="p">.</span><span class="nf">include?</span> <span class="n">t</span>
+        <span class="k">end</span>
+      <span class="k">end</span>
+      <span class="k">return</span>  <span class="n">ret_tags</span>
+    <span class="k">end</span>
+
+    <span class="k">def</span> <span class="nf">current_tag</span>
+      <span class="vi">@current_tag</span>
+    <span class="k">end</span>
+
+    <span class="k">def</span> <span class="nf">current_tag</span><span class="o">=</span><span class="p">(</span><span class="n">tag</span><span class="p">)</span>
+      <span class="vi">@current_tag</span> <span class="o">=</span> <span class="n">tag</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</code></pre>
+<br>
+<p>So, you can use the code <code class="code-inline">&lt% posts.each do |post| %&gt</code> to get all the posts at the template.</p>
+<br>
+<p>You can check more like this in the wiki page at the Github.</p>
+<br>
+<p><a href="../tag/miyano/layout/" class="hashtag">#miyano/layout</a></p>
+
+      </article>
+    </main>
+    <footer>
+      <div><a href="/">Home</a></div>
+      <div>&copy; 2018 Your Name</div>
+      <div> by <a href="https://github.com/wuusn/miyano/">Miyano</a></div>
+    </footer>
+  </body>
+</html>
